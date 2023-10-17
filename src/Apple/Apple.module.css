@@ -1,0 +1,17 @@
+.container {
+    background-color: #FF0000;
+    position: absolute;
+    height: 10px;
+    width: 10px;
+    text-align: center;
+}
+
+.container:before {
+    content: '';
+    display: block;
+    width: 4px;
+    height: 4px;
+    background-color: #00FF00;
+    margin: auto;
+    transform: translate(-50%, -4px);
+}

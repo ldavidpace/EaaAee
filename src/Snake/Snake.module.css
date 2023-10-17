@@ -1,0 +1,10 @@
+.container {
+    background-color: black;
+    color: white;
+}
+.snakeBody {
+    height: 8px;
+    width: 8px;
+    border: 1px solid black;
+    position: absolute;
+}
