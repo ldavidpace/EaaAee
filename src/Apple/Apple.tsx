@@ -1,5 +1,6 @@
+import 'react';
+
 import cx from 'classnames';
-import React from 'react';
 
 import { useApple } from '../SnakeState/SnakeState';
 import styles from './Apple.module.css';

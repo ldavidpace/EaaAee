@@ -1,1 +1,1 @@
-export {default} from './SnakeState';
+export * from './SnakeState';
