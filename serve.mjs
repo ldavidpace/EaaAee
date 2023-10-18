@@ -15,7 +15,7 @@ app.use('/',
 // })
 const port = process.env.PORT || 3000
 
-app.listen(port, 'localhost', ( err ) => {
+app.listen(port, '0.0.0.0', ( err ) => {
   if ( err ) console.error( err );
   else console.info( `Listening at http://localhost:${port}` );
 });
