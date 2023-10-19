@@ -102,14 +102,16 @@ export const joinGame = async (gameId: string) => {
         if (window.SnakeSingleton.snakes[messageData.snake.snakeId]) return 
         window.SnakeSingleton = produce(window.SnakeSingleton, (state) => {
           state.snakes[messageData.snake.snakeId] = messageData.snake;
-          
         });
         updateAddSnake();
       }
       if (messageData.type === 'SNAKE_DIRECTION_CHANGE') {
-        window.SnakeSingleton = produce(window.SnakeSingleton, (state) => {
-          state.snakes[messageData.snakeId].direction = messageData.direction;
-        });
+        if (messageData.snakeId !== window.SnakeSingleton.mySnakeId) {
+          window.SnakeSingleton = produce(window.SnakeSingleton, (state) => {
+            state.snakes[messageData.snakeId].direction = messageData.direction;
+            state.snakes[messageData.snakeId].positioning = messageData.positioning;
+          });
+        }
       }
       if (messageData.type === 'SNAKE_REMOVED') {
         window.SnakeSingleton = produce(window.SnakeSingleton, (state) => {
@@ -257,7 +259,8 @@ export const useSnake = (snakeId: string) => {
               SIDE_BOUNDARY,
           };
 
-          if (checkForCollision(nextPosition)) {
+
+          if (snakeId === state.mySnakeId && checkForCollision(nextPosition)) {
             lastSnake.dead = true;
           }
 
@@ -357,7 +360,7 @@ export const setSnakeDirection = (snakeId: string, direction: Direction) => {
     type: 'SNAKE_DIRECTION_CHANGE',
     gameId: window.SnakeSingleton.gameId,
     snakeId: snakeId,
-    position: window.SnakeSingleton.snakes[snakeId].positioning[0],
+    positioning: window.SnakeSingleton.snakes[snakeId].positioning,
     direction: direction,
   }
   socket?.send(JSON.stringify(socketMessage));
