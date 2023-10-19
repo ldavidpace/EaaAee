@@ -1,12 +1,8 @@
 import './index.css';
 
-import React from 'react';
-import ReactDOM from 'react-dom/client';
+import startSnakeGame from './start';
 
-import App from './App';
+const searchParams = new URLSearchParams(document.location.search);
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-)
+
+startSnakeGame(searchParams.get('gameId') || "MainGame!");

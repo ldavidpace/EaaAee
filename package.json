@@ -8,22 +8,26 @@
     "pnpm": "~8.9"
   },
   "scripts": {
-    "start": "node serve.mjs",
+    "start": "node server/serve.mjs",
     "dev": "vite --config vite.config.js",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@firebase/firestore": "^4.3.0",
     "@types/lodash.isequal": "^4.5.6",
     "@types/uuid": "^9.0.5",
     "classnames": "^2.3.2",
     "express": "^4.18.2",
+    "firebase": "^10.5.0",
+    "http": "0.0.1-security",
     "immer": "^10.0.3",
     "lodash.isequal": "^4.5.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "ws": "^8.14.2"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",

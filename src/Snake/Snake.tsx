@@ -5,23 +5,22 @@ import { setSnakeDirection, useSnake } from '../SnakeState/SnakeState';
 import styles from './Snake.module.css';
 
 export type SnakeProps = {
-  snakeId: string;
-  myColor: string;
   mySnake?: boolean;
+  snakeId: string;
   boardDimensions?: { height: number; width: number };
   onGameOver: () => void;
 };
 
 const Snake = ({
-  snakeId,
-  myColor,
   mySnake,
+  snakeId,
   boardDimensions = { height: 1000, width: 1000 },
   onGameOver,
 }: SnakeProps) => {
-  const snake = useSnake(snakeId, mySnake, myColor);
+  const snake = useSnake(snakeId);
 
   React.useEffect(() => {
+    if (!mySnake) return;
     const handleKeyPress = (ev: KeyboardEvent) => {
         if (snake?.direction === 'D' || snake?.direction === 'U') {
             if (ev.key === 'ArrowRight') {
@@ -44,21 +43,23 @@ const Snake = ({
     return () => {
         document.removeEventListener('keyup', handleKeyPress);
     }
-  }, [snake?.direction])
+  }, [mySnake, snake?.direction])
+
   React.useEffect(() => {
-    if (snake?.dead) {
+    if (snake?.dead && mySnake) {
       onGameOver();
     }
   }, [snake?.dead]);
 
   if (!snake) return null;
+  
   return (
     <div className={cx(styles.container)}>
       {snake?.positioning.map((position) => {
         return (
           <div
             className={styles.snakeBody}
-            key={`${position.x}${position.y}`}
+            key={`${snakeId}${position.x}${position.y}`}
             style={{
               top: `${(boardDimensions.height) * position.y}px`,
               left: `${(boardDimensions.width) * position.x}px`,

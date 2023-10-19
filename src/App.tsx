@@ -6,29 +6,32 @@ import { v4 as uuid } from 'uuid';
 import styles from './App.module.css';
 import ColorOption from './ColorOption/ColorOption';
 import SnakeBoard from './SnakeBoard';
-import { resetState, useSnakeScore } from './SnakeState/SnakeState';
+import { joinGame, useSnakeScore } from './SnakeState/SnakeState';
 
-const colors = ["#ff0000", "#00ff00", "#0000ff"];
+const createRandomColor = () => Math.floor(Math.random()*16777215).toString(16);
+const colors = [`#${createRandomColor()}`, `#${createRandomColor()}`, `#${createRandomColor()}`,`#${createRandomColor()}`,`#${createRandomColor()}`,`#${createRandomColor()}`];
 
-function App() {
-  const [gameId, setGameId] = useState<string | undefined>();
-  const [gameOver, setGameOver] = useState<boolean>();
-  const [snakeId, setSnakeId] = React.useState(uuid());
+function App({gameId}: {gameId: string}) {
+  const [gameOver, setGameOver] = useState<boolean>(false);
+  const [snakeId, setSnakeId] = React.useState<string | undefined>();
   const [myColor, setMyColor] = React.useState(colors[0]);
 
+  React.useEffect(() => {
+    joinGame(gameId);
+  }, []);
+
   const handleGameOver = () => {
-    setGameId(undefined);
+    setSnakeId(undefined);
     setGameOver(true);
   };
 
   const handleQuitGame = () => {
-    setGameId(undefined);
+    setSnakeId(undefined);
     setGameOver(false);
   }
 
   const handleStartGame = () => {
-    resetState();
-    setGameId(uuid());
+    setGameOver(false);
     setSnakeId(uuid());
   };
 
@@ -43,11 +46,11 @@ function App() {
       <SnakeBoard
         myColor={myColor}
         mySnakeId={snakeId}
-        gameId={gameId}
+        gameId={!gameOver? gameId: undefined}
         onGameOver={handleGameOver}
         onQuitGame={handleQuitGame}
       />
-      {!gameId && (
+      {!snakeId && (
         <div className={styles.popover}>
           <div>
             {gameOver
@@ -55,7 +58,7 @@ function App() {
               : "Click to start your game"}
           </div>
           <div className={styles.colorWrapper}>
-            Available Colors
+            Pick a color
             <div className={styles.colorOptions}>
               {colors.map((color) => (
                 <ColorOption
