@@ -260,7 +260,7 @@ export const useSnake = (snakeId: string) => {
           };
 
 
-          if (snakeId === state.mySnakeId && checkForCollision(nextPosition)) {
+          if (checkForCollision(nextPosition)) {
             lastSnake.dead = true;
           }
 
