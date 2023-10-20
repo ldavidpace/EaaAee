@@ -34,11 +34,9 @@ const Snake = ({
     }
     if (snake?.direction === 'L' || snake?.direction === 'R') {
         if (direction === 'D') {
-            console.log(snake?.direction, 'D');
             setSnakeDirection(snakeId, 'D');
         }
         if (direction === 'U') {
-          console.log(snake?.direction, 'U');
             setSnakeDirection(snakeId, 'U');
         }
     }
@@ -91,6 +89,7 @@ const Snake = ({
   return (
     <div className={cx(styles.container)}>
       {snake?.positioning.map((position) => {
+        if (!position.x || !position.y) return null;
         return (
           <div
             className={styles.snakeBody}

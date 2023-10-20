@@ -66,7 +66,6 @@ const stopListeningForAddSnake = (callback: () => void) => {
   addSnakeListeners.delete(callback);
 }
 
-
 const createApple = (position = {
   x: Math.floor(Math.random() * SIDE_BOUNDARY),
   y: Math.floor(Math.random() * TOP_BOUNDARY),
@@ -74,6 +73,7 @@ const createApple = (position = {
   return {
     id: uuid(),
     value,
+    gameApple,
     position,
   }
 }
@@ -137,7 +137,11 @@ export const joinGame = async (gameId: string) => {
       if (messageData.type === 'SNAKE_DEAD') {
         window.SnakeSingleton = produce(window.SnakeSingleton, (state) => {
           delete state.snakes[messageData.snakeId];
-          state.apples = state.apples.concat(...messageData.createdApples);
+          messageData.createdApples.forEach((apple: Apple) => {
+            if (!state.apples.some(a => a.id === apple.id)) {
+              state.apples.push(apple);
+            }
+          })
         });
         updateAddSnake();
       }
@@ -275,7 +279,7 @@ export const useSnake = (snakeId: string) => {
           type: 'SNAKE_DEAD',
           gameId: window.SnakeSingleton.gameId,
           snakeId: snakeId,
-          createdApples: snake.positioning.filter((position, index) => index % 2).map((position) => {
+          createdApples: snake.positioning.filter((position, index) => position && index % 2).map((position) => {
             return createApple(position, 2);
           })
         }))
@@ -378,7 +382,7 @@ export const setSnakeDirection = (snakeId: string, direction: Direction) => {
   window.SnakeSingleton = produce(window.SnakeSingleton, state => {
     state.snakes[snakeId].direction = direction;
   });
-  console.log('Setting new direction', direction);
+
   const socketMessage = {
     type: 'SNAKE_DIRECTION_CHANGE',
     gameId: window.SnakeSingleton.gameId,
