@@ -11,6 +11,7 @@ import styles from './SnakeBoard.module.css';
 export type SnakeBoardProps = {
     myColor: string;
     mySnakeId?: string;
+    myName: string;
     gameId?: string;
     onGameOver: () => void;
     onQuitGame: () => void;
@@ -23,17 +24,14 @@ const SnakeBoard = ({myColor, mySnakeId, onGameOver, onQuitGame} : SnakeBoardPro
     const allSnakeIds = useAllSnakeIds();
     const allAppleIds = useAllApples();
     React.useEffect(() => {
-        if (mySnakeId) {
-            createSnake(mySnakeId, myColor);
-        }
-    }, [mySnakeId]);
-    React.useEffect(() => {
         if (!boardRef.current) return;
         setBoardDimensions({
             height: boardRef.current.clientHeight / TOP_BOUNDARY,
             width: boardRef.current.clientWidth / SIDE_BOUNDARY,
         });
     }, []);
+
+    console.log(allAppleIds);
     
     return <div ref={boardRef} className={cx(styles.container)}>
         {mySnakeId && <div>Score: {myScore}</div>}

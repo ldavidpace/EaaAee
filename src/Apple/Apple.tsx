@@ -16,7 +16,7 @@ export type AppleProps = {
 const Apple = ({appleId, boardDimensions = {height: 100, width: 100}} : AppleProps) => {
     const apple = useApple(appleId);
     if (!apple) return null;
-    return <div className={cx(styles.container)} style={{top: `${apple.position.y * boardDimensions.height}px`, left: `${apple.position.x * boardDimensions.width}px`}} />;
+    return <div className={cx(styles.container, styles[`value${apple.value}`])} style={{top: `${apple.position.y * boardDimensions.height}px`, left: `${apple.position.x * boardDimensions.width}px`}} />;
 }
 
 export default Apple;

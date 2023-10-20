@@ -3,10 +3,11 @@ import isEqual from 'lodash.isequal';
 import React from 'react';
 import { v4 as uuid } from 'uuid';
 
-type Direction = "L" | "R" | "U" | "D";
+export type Direction = "L" | "R" | "U" | "D";
 
 type Snake = {
   snakeId: string;
+  name: string;
   color: string;
   direction: Direction;
   positioning: Array<{ x: number; y: number }>;
@@ -17,6 +18,7 @@ type Snake = {
 type Apple = {
   id: string,
   value: number,
+  gameApple?: boolean,
   position: {
     x: number, 
     y: number
@@ -64,15 +66,16 @@ const stopListeningForAddSnake = (callback: () => void) => {
   addSnakeListeners.delete(callback);
 }
 
-const createApple = () => {
+
+const createApple = (position = {
+  x: Math.floor(Math.random() * SIDE_BOUNDARY),
+  y: Math.floor(Math.random() * TOP_BOUNDARY),
+}, value = APPLE_LENGTH_ADD, gameApple?: boolean) => {
   return {
     id: uuid(),
-    value: APPLE_LENGTH_ADD,
-    position: {
-      x: Math.floor(Math.random() * SIDE_BOUNDARY),
-      y: Math.floor(Math.random() * TOP_BOUNDARY),
-    }
-}
+    value,
+    position,
+  }
 }
 
 var socket: WebSocket;
@@ -131,6 +134,13 @@ export const joinGame = async (gameId: string) => {
           }
         })
       }
+      if (messageData.type === 'SNAKE_DEAD') {
+        window.SnakeSingleton = produce(window.SnakeSingleton, (state) => {
+          delete state.snakes[messageData.snakeId];
+          state.apples = state.apples.concat(...messageData.createdApples);
+        });
+        updateAddSnake();
+      }
     } catch(err) {
       console.warn(err);
     }
@@ -165,8 +175,8 @@ const tryEatApple = (snakeId: string) => {
     let createdApple;
     window.SnakeSingleton = produce(window.SnakeSingleton, (state) => {
       state.apples.splice(eatenAppleIndex, 1);
-      if (eatenAppleIndex === 0) {
-        state.apples.push(createApple());
+      if (eatenApple.gameApple) {
+        state.apples.push(createApple(undefined,undefined,true));
         createdApple = true;
       }
       state.snakes[snakeId].score += eatenApple.value; 
@@ -236,33 +246,45 @@ export const useSnake = (snakeId: string) => {
     if (snake?.dead) return;
     const updateSnake = () => {
       if (!window.SnakeSingleton.snakes[snakeId]) return;
+      const snake = window.SnakeSingleton.snakes[snakeId];
+      const nextPosition = {
+        y:
+          (snake.positioning[0].y +
+            (snake.direction === "D"
+              ? 1
+              : snake.direction === 'L' || snake.direction === 'R'
+              ? 0
+              : -1) +
+            100) %
+            TOP_BOUNDARY,
+        x:
+          (snake.positioning[0].x +
+            (snake.direction === "R"
+              ? 1
+              : snake.direction === "D" || snake.direction === "U"
+              ? 0
+              : -1) +
+            100) %
+          SIDE_BOUNDARY,
+      };
+
+      if (snakeId === window.SnakeSingleton.mySnakeId && checkForCollision(nextPosition)) {
+        window.SnakeSingleton = produce(window.SnakeSingleton, (state) => {
+          state.snakes[snakeId].dead = true;
+        });
+        socket.send(JSON.stringify({
+          type: 'SNAKE_DEAD',
+          gameId: window.SnakeSingleton.gameId,
+          snakeId: snakeId,
+          createdApples: snake.positioning.filter((position, index) => index % 2).map((position) => {
+            return createApple(position, 2);
+          })
+        }))
+      }
+
       window.SnakeSingleton = produce(window.SnakeSingleton, state => {
         const lastSnake = state.snakes[snakeId];
-          const nextPosition = {
-            y:
-              (lastSnake.positioning[0].y +
-                (lastSnake.direction === "D"
-                  ? 1
-                  : lastSnake.direction === 'L' || lastSnake.direction === 'R'
-                  ? 0
-                  : -1) +
-                100) %
-                TOP_BOUNDARY,
-            x:
-              (lastSnake.positioning[0].x +
-                (lastSnake.direction === "R"
-                  ? 1
-                  : lastSnake.direction === "D" || lastSnake.direction === "U"
-                  ? 0
-                  : -1) +
-                100) %
-              SIDE_BOUNDARY,
-          };
-
-
-          if (checkForCollision(nextPosition)) {
-            lastSnake.dead = true;
-          }
+          
 
           if (lastSnake.dead) return;
 
@@ -321,7 +343,7 @@ export const getSnake = (snakeId: string) => {
   return window.SnakeSingleton.snakes[snakeId];
 };
 
-export const createSnake = (snakeId: string, color?: string) => {
+export const createSnake = (snakeId: string, color: string, name: string) => {
   if (getSnake(snakeId)) {
     return getSnake(snakeId);
   };
@@ -329,6 +351,7 @@ export const createSnake = (snakeId: string, color?: string) => {
     state.mySnakeId = snakeId;
     state.snakes[snakeId] = {
       snakeId,
+      name,
       color: color || "#ff0000",
       direction: "R",
       positioning: [
@@ -356,6 +379,7 @@ export const setSnakeDirection = (snakeId: string, direction: Direction) => {
   window.SnakeSingleton = produce(window.SnakeSingleton, state => {
     state.snakes[snakeId].direction = direction;
   });
+  console.log('Setting new direction', direction);
   const socketMessage = {
     type: 'SNAKE_DIRECTION_CHANGE',
     gameId: window.SnakeSingleton.gameId,

@@ -69,7 +69,7 @@ export default async (server, ) => {
               type: 'SNAKE_ADDED',
               snake: parsedMessage.snake,
             });
-          } else if (parsedMessage.type === 'SNAKE_DIRECTION_CHANGE' || parsedMessage.type === 'APPLE_EATEN') {
+          } else if (parsedMessage.type === 'SNAKE_DIRECTION_CHANGE' || parsedMessage.type === 'APPLE_EATEN' || parsedMessage.type === 'SNAKE_DEAD') {
             sendMessageToGame(parsedMessage.gameId, parsedMessage);
           } else {
             console.log(parsedMessage)

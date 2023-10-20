@@ -1,7 +1,8 @@
 import cx from 'classnames';
+import Hammer from 'hammerjs';
 import React from 'react';
 
-import { setSnakeDirection, useSnake } from '../SnakeState/SnakeState';
+import { Direction, setSnakeDirection, useSnake } from '../SnakeState/SnakeState';
 import styles from './Snake.module.css';
 
 export type SnakeProps = {
@@ -21,27 +22,61 @@ const Snake = ({
 
   React.useEffect(() => {
     if (!mySnake) return;
+
+    const handleDirectionInput = (direction: Direction ) => {
+      if (snake?.direction === 'D' || snake?.direction === 'U') {
+        if (direction === 'R') {
+            setSnakeDirection(snakeId, 'R');
+        }
+        if (direction === 'L') {
+            setSnakeDirection(snakeId, 'L');
+        }
+    }
+    if (snake?.direction === 'L' || snake?.direction === 'R') {
+        if (direction === 'D') {
+            console.log(snake?.direction, 'D');
+            setSnakeDirection(snakeId, 'D');
+        }
+        if (direction === 'U') {
+          console.log(snake?.direction, 'U');
+            setSnakeDirection(snakeId, 'U');
+        }
+    }
+    }
+
     const handleKeyPress = (ev: KeyboardEvent) => {
-        if (snake?.direction === 'D' || snake?.direction === 'U') {
-            if (ev.key === 'ArrowRight') {
-                setSnakeDirection(snakeId, 'R');
-            }
-            if (ev.key === 'ArrowLeft') {
-                setSnakeDirection(snakeId, 'L');
-            }
-        }
-        if (snake?.direction === 'L' || snake?.direction === 'R') {
-            if (ev.key === 'ArrowDown') {
-                setSnakeDirection(snakeId, 'D');
-            }
-            if (ev.key === 'ArrowUp') {
-                setSnakeDirection(snakeId, 'U');
-            }
-        }
+        handleDirectionInput(ev.key.replace('Arrow', '')[0] as Direction);
     };
     document.addEventListener('keyup', handleKeyPress);
+    var manager = new Hammer.Manager(document.body);
+    var swipe = new Hammer.Swipe();
+    manager.add(swipe);
+    
+    const handleSwipeLeft = () => {
+      handleDirectionInput('L');
+    }
+    const handleSwipeRight = () => {
+      handleDirectionInput('R');
+    }
+    const handleSwipeUp =() => {
+      handleDirectionInput( 'U');
+    }
+    const handleSwipeDown = () => {
+      handleDirectionInput('D');
+    };
+
+    manager.on('swipeleft', handleSwipeLeft)
+    manager.on('swiperight', handleSwipeRight)
+    manager.on('swipeup', handleSwipeUp);
+    manager.on('swipedown', handleSwipeDown);
+
     return () => {
-        document.removeEventListener('keyup', handleKeyPress);
+      manager.off('swipeleft', handleSwipeLeft);
+      manager.off('swiperight', handleSwipeRight);
+      manager.off('swipeup', handleSwipeUp);
+      manager.off('swipedown', handleSwipeDown);
+
+      document.removeEventListener('keyup', handleKeyPress);
     }
   }, [mySnake, snake?.direction])
 

@@ -21,6 +21,7 @@
     "classnames": "^2.3.2",
     "express": "^4.18.2",
     "firebase": "^10.5.0",
+    "hammerjs": "^2.0.8",
     "http": "0.0.1-security",
     "immer": "^10.0.3",
     "lodash.isequal": "^4.5.0",
@@ -30,6 +31,7 @@
     "ws": "^8.14.2"
   },
   "devDependencies": {
+    "@types/hammerjs": "^2.0.43",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
