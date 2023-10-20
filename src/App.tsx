@@ -22,7 +22,7 @@ let colors = [`#${createRandomColor()}`, `#${createRandomColor()}`, `#${createRa
 const isColorDark = (color: string) => {
   const sumOfFirstNumbers = parseInt(color[1]) + parseInt(color[3]) + parseInt(color[5]);
   if (isNaN(sumOfFirstNumbers)) return false;
-  return sumOfFirstNumbers < 18;
+  return sumOfFirstNumbers < 16;
 }
 
 while (colors.some((color) => isColorDark(color) )) {
