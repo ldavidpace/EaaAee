@@ -52,7 +52,7 @@ const updateSnakes = () => {
 const snakeListeners: Set<() => void> = new Set();
 setInterval(() => {
   updateSnakes();
-}, 100);
+}, 50);
 
 const updateAddSnake = () => {
   addSnakeListeners.forEach(listener => listener());
@@ -154,7 +154,6 @@ export const joinGame = async (gameId: string) => {
   }
 
 }
-
 
 export const resetState = () => {
   window.SnakeSingleton = {
