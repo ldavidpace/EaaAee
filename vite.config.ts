@@ -7,8 +7,15 @@ export default defineConfig({
   base: '/',
   css: {
     modules: {
-      generateScopedNames: (name, filename) => `${filename}_${name}`,
+      generateScopedName: '[name]__[local]___[hash:base64:5]',
     }
   },
+  build: {
+    sourcemap: true,
+    cssCodeSplit: true,
+  },
   plugins: [react()],
+  server: {
+    open: true,
+  }
 })

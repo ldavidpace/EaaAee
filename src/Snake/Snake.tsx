@@ -2,7 +2,9 @@ import cx from 'classnames';
 import Hammer from 'hammerjs';
 import React from 'react';
 
-import { Direction, setSnakeDirection, useSnake } from '../SnakeState/SnakeState';
+import {
+    Direction, setSnakeDirection, useBoardDimensions, useSnake
+} from '../SnakeState/SnakeState';
 import styles from './Snake.module.css';
 
 export type SnakeProps = {
@@ -15,11 +17,10 @@ export type SnakeProps = {
 const Snake = ({
   mySnake,
   snakeId,
-  boardDimensions = { height: 1000, width: 1000 },
   onGameOver,
 }: SnakeProps) => {
   const snake = useSnake(snakeId);
-
+  const boardDimensions = useBoardDimensions();
   React.useEffect(() => {
     if (!mySnake) return;
 
@@ -89,7 +90,7 @@ const Snake = ({
   return (
     <div className={cx(styles.container)}>
       {snake?.positioning.map((position) => {
-        if (!position.x || !position.y) return null;
+        if ((!position.x && position.x !== 0) || !position.y && position.y !== 0) return null;
         return (
           <div
             className={styles.snakeBody}

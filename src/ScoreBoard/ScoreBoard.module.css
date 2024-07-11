@@ -1,0 +1,17 @@
+.container {
+    background-color: black;
+    color: white;
+    height: 100%;
+    width: 100%;
+    padding: 4px;
+    pointer-events: none;
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.scoreBoard {
+    background-color: rgba(255,255,255,.2);
+    height: 50vh;
+    padding: 16px;
+    overflow: auto;
+}

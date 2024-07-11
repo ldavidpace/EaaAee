@@ -37,7 +37,8 @@ declare global {
       mySnakeId?: string;
       snakes: Record<string, Snake>;
       apples: Array<Apple>;
-    }
+    };
+    snakeBoard: {width: number; height: number};
   }
 }
 
@@ -258,7 +259,7 @@ export const useSnake = (snakeId: string) => {
               : snake.direction === 'L' || snake.direction === 'R'
               ? 0
               : -1) +
-            100) %
+              TOP_BOUNDARY) %
             TOP_BOUNDARY,
         x:
           (snake.positioning[0].x +
@@ -267,7 +268,7 @@ export const useSnake = (snakeId: string) => {
               : snake.direction === "D" || snake.direction === "U"
               ? 0
               : -1) +
-            100) %
+              SIDE_BOUNDARY) %
           SIDE_BOUNDARY,
       };
 
@@ -396,4 +397,16 @@ export const setSnakeDirection = (snakeId: string, direction: Direction) => {
 export const isColorUsed = (color: string) => {
   return Object.values(window.SnakeSingleton.snakes)
     .some(snake => snake.color === color);
+}
+
+export const setBoardDimensions = (boardDimensions: {width: number, height: number}) => {
+  window.snakeBoard = boardDimensions;
+}
+
+export const useBoardDimensions = () => {
+  if (!window.snakeBoard) return {height: 1, width: 1};
+  return {
+    height: window.snakeBoard.height /TOP_BOUNDARY,
+    width: window.snakeBoard.width / SIDE_BOUNDARY
+  }
 }
